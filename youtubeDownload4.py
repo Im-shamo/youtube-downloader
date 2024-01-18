@@ -3,7 +3,6 @@ import os
 
 
 
-
 def mode_select(modes: dict) -> str:
 
     question = f"\nPlease select mode (1 - {len(modes)})"
@@ -92,8 +91,35 @@ def get_links():
     return links.split()
 
 
-def get_selection(number_of_things, array) -> list:
+def selection_range(text, number_of_items, selection, array):
+    start, end = text.split("-")
 
+    try:
+
+        start = int(start)
+        end = int(end)
+
+        if start < end and check_num_range(start, 1, number_of_items) and check_num_range(end, 1, number_of_items):
+            selection.extend(
+                [elem for elem in array[start-1:end] if elem not in selection])
+
+    except ValueError:
+        # add a statment here
+        pass
+
+
+def selection_single(text, number_of_items, selection, array):
+    n = int(text)
+
+    if check_num_range(n, 1, number_of_items):
+        i = n-1
+        if array[i] not in selection:
+            selection.append(array[i])
+
+
+def get_selection(array) -> list:
+
+    number_of_items = len(array)
     selection = []
     answer = get_input("Enter selection (1-10 5)",
                        default="all").lower().strip()
@@ -103,32 +129,16 @@ def get_selection(number_of_things, array) -> list:
 
     answer = answer.split()
 
-    print(answer)
+    # print(answer)
 
-    for x in answer:
-        try:
-            if len(x.split("-")) == 2:
+    for text in answer:
 
-                start, end = x.split("-")
+        if len(text.split("-")) == 2:
+            selection_range(text, number_of_items, selection, array)
 
-                start = int(start)
-                end = int(end)
+        elif text.isdigit():
 
-                if (start < end and check_num_range(start, 1, number_of_things) and
-                check_num_range(end, 1, number_of_things)):
-
-                    selection.extend([elem for elem in array[start-1:end] if elem not in selection])
-
-            elif x.isdigit():
-
-                n = int(x)
-
-                if check_num_range(n, 1, number_of_things):
-                    if not array[n-1] in selection:
-                        selection.append(array[n-1])
-
-        except ValueError:
-            pass
+            selection_single(text, number_of_items, selection, array)
 
     return selection
 
@@ -156,7 +166,7 @@ def download_highest_resolution(videos: list, download_dir: str):
 def download_by_itag(videos: list, download_dir: str, itag=None, print_info=True):
 
     if print_info:
-        [print_stream_data(video) for video in videos]
+        [print_streams_info(video) for video in videos]
 
     if itag is None:
         itag = int(get_input("Enter itag"))
@@ -250,6 +260,8 @@ def shamo_videos(videos=None):
 
     [print(f"{i+1} | Author: {video.author:<20} | Video title: {video.title:<40} | Length: {seconds_to_min(video.length)}")
      for i, video in enumerate(videos)]
+    
+    
 
     get_videos_modes()(videos, download_dir)
 
@@ -259,6 +271,7 @@ def shamo_playlist():
     while True:
         try:
             playlists = [Playlist(videos) for videos in get_links()]
+            break
 
         except Exception as e:
             print(e)
@@ -280,7 +293,8 @@ def main():
 def test():
     array = ["a", "b", "c", "d", "e", 1, 2, 3, 4]
 
-    selection = get_selection(len(array), array)
+    print(array)
+    selection = get_selection(array)
 
     print(selection)
 
