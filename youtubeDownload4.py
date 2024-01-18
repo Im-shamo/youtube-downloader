@@ -2,7 +2,6 @@ from pytube import YouTube, Playlist
 import os
 
 
-
 def mode_select(modes: dict) -> str:
 
     question = f"\nPlease select mode (1 - {len(modes)})"
