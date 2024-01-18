@@ -14,7 +14,6 @@ class Download:
         self.streams = []
         self.failed_downloads = []
 
-
     def download(self) -> None:
         self.failed_downloads = []
 
@@ -39,31 +38,41 @@ class Download:
     def itag(self, itag):
         self.streams = [video.streams.get_by_itag(
             itag) for video in self.videos]
-        
+
     def print_streams_filesize(self):
-        
+
         if not self.streams:
             raise StreamsEmpty
-        
+
         [print(f"{i+1:^4}| Filesize: {stream.filesize_mb}MB {'':^4}| Title: {stream.title}")
-        for i, stream in enumerate(self.streams)]
-        
+         for i, stream in enumerate(self.streams)]
+
     def print_stream_qs(self):
-        
+
         for video, stream_q in zip(self.videos, self.stream_qs):
             print("\nTitle: ", video.title)
-            [print(line) for line in video.streams]
-        
-        
+            [print(line) for line in stream_q]
+
     def filter_audio(self):
-        self.stream_qs = [stream_q.filter(only_audio=True) for stream_q in self.streams_qs]
+        self.stream_qs = [stream_q.filter(only_audio=True)
+                          for stream_q in self.stream_qs]
 
     def filter_video(self):
-        self.stream_qs = [stream_q.filter(only_video=True) for stream_q in self.streams_qs]
-        
-    def filter_adaptive(self):
-        self.stream_qs = [stream_q.filter(adaptive=True) for stream_q in self.streams_qs]
+        self.stream_qs = [stream_q.filter(only_video=True)
+                          for stream_q in self.stream_qs]
 
+    def filter_adaptive(self):
+        self.stream_qs = [stream_q.filter(adaptive=True)
+                          for stream_q in self.stream_qs]
+
+    def get_filters(self):
+        MODES = {
+            "Filter Audio": self.filter_audio,
+            "Filter Video": self.filter_video,
+            "Filter Adaptive": self.filter_adaptive
+        }
+
+        MODES[mode_select(MODES)]()
 
 
 class PrintInfo:
@@ -213,17 +222,6 @@ def get_selection(array) -> list:
 
 # handles downloading
 
-def get_videos_modes():
-    MODES = {
-        "Highest progressive video": download_highest_resolution,
-        "By itag": download_by_itag,
-        "Filter Audio": filter_audio,
-        "Filter Video": filter_video,
-        "Filter Adaptive": filter_adaptive
-    }
-
-    return MODES[mode_select(MODES)]
-
 
 # handles printing info
 
@@ -246,7 +244,13 @@ def shamo_videos(videos=None):
     [print(f"{i+1} | Author: {video.author:<20} | Video title: {video.title:<40} | Length: {seconds_to_min(video.length)}")
      for i, video in enumerate(videos)]
 
-    get_videos_modes()(videos, download_dir)
+    selected_videos = get_selection(videos)
+
+    download = Download(videos, download_dir)
+
+    download.get_filters()
+    download.print_stream_qs()
+    
 
 
 def shamo_playlist():
@@ -283,5 +287,4 @@ def test():
 
 
 if __name__ == "__main__":
-    # main()
-    test()
+    main()
