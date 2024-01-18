@@ -1,5 +1,74 @@
-from pytube import YouTube, Playlist
+from pytube import YouTube, Playlist, exceptions
 import os
+
+
+class StreamsEmpty(Exception):
+    pass
+
+
+class Download:
+    def __init__(self, videos: list, download_dir: str) -> None:
+        self.videos = videos
+        self.stream_qs = [video.streams for video in self.videos]
+        self.download_dir = download_dir
+        self.streams = []
+        self.failed_downloads = []
+
+
+    def download(self) -> None:
+        self.failed_downloads = []
+
+        if not self.streams:
+            raise StreamsEmpty
+
+        for i, stream in enumerate(self.streams):
+            print(f"\n{i+1}: Downloading {stream.title}")
+
+            try:
+                stream.download(self.download_dir)
+                print(f"{i+1}: Downloaded {stream.title}")
+
+            except Exception as e:
+                print(f"{i+1}: Failed to download {stream.title}. Error {e}")
+                self.failed_downloads.append(stream)
+
+    def highest_resolution(self):
+        self.streams = [video.streams.get_highest_resolution()
+                        for video in self.videos]
+
+    def itag(self, itag):
+        self.streams = [video.streams.get_by_itag(
+            itag) for video in self.videos]
+        
+    def print_streams_filesize(self):
+        
+        if not self.streams:
+            raise StreamsEmpty
+        
+        [print(f"{i+1:^4}| Filesize: {stream.filesize_mb}MB {'':^4}| Title: {stream.title}")
+        for i, stream in enumerate(self.streams)]
+        
+    def print_stream_qs(self):
+        
+        for video, stream_q in zip(self.videos, self.stream_qs):
+            print("\nTitle: ", video.title)
+            [print(line) for line in video.streams]
+        
+        
+    def filter_audio(self):
+        self.stream_qs = [stream_q.filter(only_audio=True) for stream_q in self.streams_qs]
+
+    def filter_video(self):
+        self.stream_qs = [stream_q.filter(only_video=True) for stream_q in self.streams_qs]
+        
+    def filter_adaptive(self):
+        self.stream_qs = [stream_q.filter(adaptive=True) for stream_q in self.streams_qs]
+
+
+
+class PrintInfo:
+    def __init__(self) -> None:
+        pass
 
 
 def mode_select(modes: dict) -> str:
@@ -156,91 +225,8 @@ def get_videos_modes():
     return MODES[mode_select(MODES)]
 
 
-def download_highest_resolution(videos: list, download_dir: str):
-
-    streams = [video.streams.get_highest_resolution() for video in videos]
-    download_streams(streams, download_dir)
-
-
-def download_by_itag(videos: list, download_dir: str, itag=None, print_info=True):
-
-    if print_info:
-        [print_streams_info(video) for video in videos]
-
-    if itag is None:
-        itag = int(get_input("Enter itag"))
-
-    streams = [video.streams.get_by_itag(itag) for video in videos]
-    download_streams(streams, download_dir)
-
-
-def filter_audio(videos: list, download_dir: str):
-
-    for video in videos:
-        print("\nTitle: ", video.title)
-        [print(line) for line in video.streams.filter(only_audio=True)]
-
-    download_by_itag(videos, download_dir, print_info=False)
-
-
-def filter_video(videos: list, download_dir: str):
-
-    for video in videos:
-        print("\nTitle: ", video.title)
-        [print(line) for line in video.streams.filter(only_video=True)]
-
-    download_by_itag(videos, download_dir, print_info=False)
-
-
-def filter_adaptive(videos: list, download_dir: str):
-
-    for video in videos:
-        print("\nTitle: ", video.title)
-        [print(line) for line in video.streams.filter(adaptive=True)]
-
-    download_by_itag(videos, download_dir, print_info=False)
-
-
-def download_streams(streams: list, download_dir: str):
-
-    failed_downloads = []
-
-    if get_confirm("Display filesize", default="n"):
-        print_streams_filesize(streams)
-
-    if get_confirm("Download videos?"):
-
-        for i, stream in enumerate(streams):
-            print(f"\n{i+1}: Downloading {stream.title}")
-
-            try:
-                stream.download(download_dir)
-                print(f"{i+1}: Downloaded {stream.title}")
-
-            except Exception as e:
-                print(f"{i+1}: Failed to download {stream.title}. Error {e}")
-                failed_downloads.append(stream)
-
-        if failed_downloads and get_confirm("Retry download", "n"):
-            download_streams(failed_downloads, download_dir)
-
-    else:
-        print("Fail to Download")
-
-
 # handles printing info
 
-def print_streams_filesize(streams: list):
-
-    [print(f"{i+1:^4}| Filesize: {stream.filesize_mb}MB {'':^4}| Title: {stream.title}")
-     for i, stream in enumerate(streams)]
-
-
-def print_streams_info(videos: list):
-
-    for video in videos:
-        print("\nTitle: ", video.title)
-        [print(line) for line in video.streams]
 
 # the modes
 
@@ -259,8 +245,6 @@ def shamo_videos(videos=None):
 
     [print(f"{i+1} | Author: {video.author:<20} | Video title: {video.title:<40} | Length: {seconds_to_min(video.length)}")
      for i, video in enumerate(videos)]
-    
-    
 
     get_videos_modes()(videos, download_dir)
 
