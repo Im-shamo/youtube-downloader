@@ -1,5 +1,5 @@
 from utility import *
-
+import os
 
 def mode_select(modes: dict) -> any:
 
@@ -114,3 +114,23 @@ def get_confirm(question, default=None):
 
         elif answer.lower().strip() in ["no", "n"]:
             return False
+
+
+def get_download_dir():
+
+    while True:
+        download_dir = get_input(
+            "Enter download directory",
+            os.path.join(os.path.expanduser("~"), "Videos")
+        )
+        # implemant path checking
+        print(f"saving to {download_dir}")
+
+        if get_confirm("Confirm location", "y"):
+
+            return download_dir
+
+
+def get_links():
+    links = get_input("Enter links sperated by space")
+    return links.split()
