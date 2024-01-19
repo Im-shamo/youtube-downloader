@@ -13,31 +13,59 @@ class Download:
         self.download_dir = download_dir
         self.streams = []
         self.failed_downloads = []
+        self.filtered = False
 
-    def download(self, print_info = False) -> None:
+    def download(self, print_info=False) -> None:
         self.failed_downloads = []
 
         if not self.streams:
             raise StreamsEmpty
 
         for i, stream in enumerate(self.streams):
-            if print_info: print(f"\n{i+1}: Downloading {stream.title}")
+            if print_info:
+                print(f"\n{i+1}: Downloading {stream.title}")
 
             try:
                 stream.download(self.download_dir)
-                if print_info: print(f"{i+1}: Downloaded {stream.title}")
+                if print_info:
+                    print(f"{i+1}: Downloaded {stream.title}")
 
             except Exception as e:
-                if print_info: print(f"{i+1}: Failed to download {stream.title}. Error {e}")
+                if print_info:
+                    print(f"{i+1}: Failed to download {stream.title}. Error {e}")
                 self.failed_downloads.append(stream)
 
-    def download_prompt(self):
+    def get_streams_prompt(self):
+
+        if self.filtered:
+            streams_modes = {
+                "Download by itag": self.itag
+            }
+
+        else:
+            streams_modes = {
+                "Download highest resolution": self.highest_resolution,
+                "Download audio only": self.audio_only
+            }
+
+        answer = mode_select(streams_modes)
+        
+        if answer == "Download by itag":
+            streams_modes[answer](get_num("Enter itag"))
+            
+        else:
+            streams_modes[answer]()
+
+    def get_download_prompt(self):
         if get_confirm("Continue to download", default="y"):
             self.download(print_info=True)
-    
-    
+
     def highest_resolution(self):
         self.streams = [stream_q.get_highest_resolution()
+                        for stream_q in self.stream_qs]
+
+    def audio_only(self):
+        self.streams = [stream_q.get_audio_only()
                         for stream_q in self.stream_qs]
 
     def itag(self, itag):
@@ -53,7 +81,7 @@ class Download:
          for i, stream in enumerate(self.streams)]
 
     def print_stream_qs(self):
-        # make the output nicer 
+        # make the output nicer
         for video, stream_q in zip(self.videos, self.stream_qs):
             print("\nTitle: ", video.title)
             [print(line) for line in stream_q]
@@ -80,15 +108,18 @@ class Download:
 
         MODES[mode_select(MODES)]()
 
-    def do_nothing():
+        self.filtered = True
+
+    def do_nothing(self):
         return
+
 
 class PrintInfo:
     def __init__(self) -> None:
         pass
 
 
-def mode_select(modes: dict) -> str:
+def mode_select(modes: dict) -> any:
 
     question = f"\nPlease select mode (1 - {len(modes)})"
     for i, name in enumerate(modes):
@@ -118,10 +149,7 @@ def seconds_to_min(seconds):
 
 
 def check_num_range(n, start, end):
-    if start <= n and end >= n:
-        return True
-    else:
-        return False
+    return True if start <= n and end >= n else False
 
 # handles user inputs
 
@@ -141,6 +169,15 @@ def get_input(question, default=None):
         if default is not None:
             return default
 
+
+def get_num(question, default=None):
+    
+    while True:
+        answer = get_input(question, default)
+        if answer.isdigit():
+            return answer
+        else:
+            print("Enter a positve integer")
 
 def get_confirm(question, default=None):
 
@@ -255,8 +292,15 @@ def shamo_videos(videos=None):
     selected_videos = get_selection(videos)
 
     download = Download(selected_videos, download_dir)
+    download.filters_prompt()
     
-    
+    if download.filtered:
+        download.print_stream_qs()
+
+    download.get_streams_prompt()
+    download.print_streams_filesize()
+    download.get_download_prompt()
+
 
 def shamo_playlist():
 
