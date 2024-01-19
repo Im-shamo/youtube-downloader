@@ -14,30 +14,35 @@ class Download:
         self.streams = []
         self.failed_downloads = []
 
-    def download(self) -> None:
+    def download(self, print_info = False) -> None:
         self.failed_downloads = []
 
         if not self.streams:
             raise StreamsEmpty
 
         for i, stream in enumerate(self.streams):
-            print(f"\n{i+1}: Downloading {stream.title}")
+            if print_info: print(f"\n{i+1}: Downloading {stream.title}")
 
             try:
                 stream.download(self.download_dir)
-                print(f"{i+1}: Downloaded {stream.title}")
+                if print_info: print(f"{i+1}: Downloaded {stream.title}")
 
             except Exception as e:
-                print(f"{i+1}: Failed to download {stream.title}. Error {e}")
+                if print_info: print(f"{i+1}: Failed to download {stream.title}. Error {e}")
                 self.failed_downloads.append(stream)
 
+    def download_prompt(self):
+        if get_confirm("Continue to download", default="y"):
+            self.download(print_info=True)
+    
+    
     def highest_resolution(self):
-        self.streams = [video.streams.get_highest_resolution()
-                        for video in self.videos]
+        self.streams = [stream_q.get_highest_resolution()
+                        for stream_q in self.stream_qs]
 
     def itag(self, itag):
-        self.streams = [video.streams.get_by_itag(
-            itag) for video in self.videos]
+        self.streams = [stream_q.get_by_itag(
+            itag) for stream_q in self.stream_qs]
 
     def print_streams_filesize(self):
 
@@ -48,7 +53,7 @@ class Download:
          for i, stream in enumerate(self.streams)]
 
     def print_stream_qs(self):
-
+        # make the output nicer 
         for video, stream_q in zip(self.videos, self.stream_qs):
             print("\nTitle: ", video.title)
             [print(line) for line in stream_q]
@@ -65,8 +70,9 @@ class Download:
         self.stream_qs = [stream_q.filter(adaptive=True)
                           for stream_q in self.stream_qs]
 
-    def get_filters(self):
+    def filters_prompt(self):
         MODES = {
+            "None": self.do_nothing,
             "Filter Audio": self.filter_audio,
             "Filter Video": self.filter_video,
             "Filter Adaptive": self.filter_adaptive
@@ -74,6 +80,8 @@ class Download:
 
         MODES[mode_select(MODES)]()
 
+    def do_nothing():
+        return
 
 class PrintInfo:
     def __init__(self) -> None:
@@ -195,7 +203,7 @@ def selection_single(text, number_of_items, selection, array):
 
 
 def get_selection(array) -> list:
-
+    selected_indexs = []
     number_of_items = len(array)
     selection = []
     answer = get_input("Enter selection (1-10 5)",
@@ -246,12 +254,9 @@ def shamo_videos(videos=None):
 
     selected_videos = get_selection(videos)
 
-    download = Download(videos, download_dir)
-
-    download.get_filters()
-    download.print_stream_qs()
+    download = Download(selected_videos, download_dir)
     
-
+    
 
 def shamo_playlist():
 
