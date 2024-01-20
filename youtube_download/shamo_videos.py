@@ -16,8 +16,19 @@ def shamo_videos(videos=None):
 
     download_dir = get_download_dir()
 
-    [print(f"{i+1} | Author: {video.author:<20} | Video title: {video.title:<40} | Length: {seconds_to_min(video.length)}")
-     for i, video in enumerate(videos)]
+    # [print(f"{i+1:^4} | Author: {video.author:.20} | Video title: {video.title:<40} | Length: {seconds_to_min(video.length)}")
+    #  for i, video in enumerate(videos)]
+
+    output_text = ""
+    for i, video in enumerate(videos):
+        author = video.author[:10] + "..." if len(video.author) > 10 else video.author
+        title = video.title
+        length = seconds_to_min(video.length)
+        num = str(i+1)
+        
+        output_text += f"{num:<4} | Author: {author:<15} | Length: {length} | Video title: {title}\n"
+
+    print(output_text)
 
     selected_videos = get_selection(videos)
 
