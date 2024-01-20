@@ -3,7 +3,6 @@ from videos_download import VidosDownload
 from user_input import *
 
 
-
 def shamo_videos(videos=None):
 
     while not (videos):
@@ -21,12 +20,14 @@ def shamo_videos(videos=None):
 
     output_text = ""
     for i, video in enumerate(videos):
-        author = video.author[:10] + "..." if len(video.author) > 10 else video.author
+        author = video.author[:10] + \
+            "..." if len(video.author) > 10 else video.author
         title = video.title
         length = seconds_to_min(video.length)
         num = str(i+1)
-        
-        output_text += f"{num:<4} | Author: {author:<15} | Length: {length} | Video title: {title}\n"
+
+        output_text += f"{num:<4} | Author: {
+            author:<15} | Length: {length} | Video title: {title}\n"
 
     print(output_text)
 
@@ -41,7 +42,7 @@ def shamo_videos(videos=None):
     download.get_streams_prompt()
     download.print_streams_filesize()
     download.get_download_prompt()
-    
-    
+
+
 if __name__ == "__main__":
     shamo_videos()

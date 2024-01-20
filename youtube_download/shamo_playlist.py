@@ -14,14 +14,14 @@ def shamo_playlist():
             print(e)
 
     print(playlists)
-    [print(f"{i+1} | Playlist title: {playlist.title:<40} | No. vidoes: {playlist.length}") 
+    [print(f"{i+1} | Playlist title: {playlist.title:<40} | No. vidoes: {playlist.length}")
      for i, playlist in enumerate(playlists)]
-    
+
     selection = get_selection(playlists)
-    
+
     if get_confirm("Continue"):
         [shamo_videos(playlist.videos) for playlist in selection]
-        
-        
+
+
 if __name__ == "__main__":
     shamo_playlist()

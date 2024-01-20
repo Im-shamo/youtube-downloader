@@ -1,10 +1,14 @@
-from pytube import YouTube
+from pytube import YouTube, Stream
 from exceptions import *
 from user_input import *
 
 
 class VidosDownload:
-    def __init__(self, videos: list, download_dir: str) -> None:
+    def __init__(self, videos: list[YouTube], download_dir: str) -> None:
+
+        self.streams: list[Stream]
+        self.failed_downloads: list[Stream]
+
         if videos:
             self.videos = videos
         else:

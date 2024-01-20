@@ -1,7 +1,8 @@
 from utility import *
 import os
 
-def mode_select(modes: dict) -> any:
+
+def mode_select(modes: dict) -> str:
 
     question = f"\nPlease select mode (1 - {len(modes)})"
     for i, name in enumerate(modes):
@@ -24,34 +25,44 @@ def mode_select(modes: dict) -> any:
             print("\nMode not found. Please try again")
 
 
-def selection_single(text, number_of_items, selection, array):
+def selection_single(text: str, number_of_items: int, array: list, selection: list, selected_indexs: set) -> None:
     n = int(text)
 
     if check_num_range(n, 1, number_of_items):
         i = n-1
-        if array[i] not in selection:
+        if i not in selected_indexs:
             selection.append(array[i])
+            selected_indexs.add(i)
 
 
-def selection_range(text, number_of_items, selection, array):
+def selection_range(text: str, number_of_items: int, array: list, selection: list, selected_indexs: set) -> None:
     start, end = text.split("-")
 
     try:
-
-        start = int(start)
-        end = int(end)
-
-        if start < end and check_num_range(start, 1, number_of_items) and check_num_range(end, 1, number_of_items):
-            selection.extend(
-                [elem for elem in array[start-1:end] if elem not in selection])
+        start_i = int(start)
+        end_i = int(end)
 
     except ValueError:
         # add a statment here
         pass
 
+    if start_i < end_i and check_num_range(start_i, 1, number_of_items) and check_num_range(end_i, 1, number_of_items):
+        start_i -= 1
+        index_range = range(start_i, end_i)
+        for i in index_range:
+            if i in selected_indexs:
+                continue
+            else:
+                selection.append(array[i])
+                selected_indexs.add(i)
+
 
 def get_selection(array) -> list:
-    selected_indexs = []
+
+    selected_indexs: set[int]
+    selection: list
+
+    selected_indexs = set()
     number_of_items = len(array)
     selection = []
     answer = get_input("Enter selection (1-10 5)",
@@ -67,11 +78,13 @@ def get_selection(array) -> list:
     for text in answer:
 
         if len(text.split("-")) == 2:
-            selection_range(text, number_of_items, selection, array)
+            selection_range(text, number_of_items, array,
+                            selection, selected_indexs)
 
         elif text.isdigit():
 
-            selection_single(text, number_of_items, selection, array)
+            selection_single(text, number_of_items, array,
+                             selection, selected_indexs)
 
     return selection
 
