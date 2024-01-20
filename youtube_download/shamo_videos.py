@@ -41,3 +41,7 @@ def shamo_videos(videos=None):
     download.get_streams_prompt()
     download.print_streams_filesize()
     download.get_download_prompt()
+    
+    
+if __name__ == "__main__":
+    shamo_videos()
