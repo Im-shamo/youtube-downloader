@@ -1,0 +1,4 @@
+print('''
+i am
+dumb
+''')
