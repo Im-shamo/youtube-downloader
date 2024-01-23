@@ -12,7 +12,7 @@ def r(n, r_n):
 def f(n, r_n):
     gcd_list = []
     ans_list = []
-    while n < 100000000:
+    while n < 10000:
         value_gcd = gcd(n+1, r_n)
         m = n + 1
         r_m = r_n + value_gcd
@@ -25,8 +25,8 @@ def f(n, r_n):
     return ans_list
 
 def main():
-    r(1,7)
-    
+    ans = f(1,7)
+    [print(line) for line in ans if line[-1] != "1"]
 
 if __name__ == "__main__":
     main()
