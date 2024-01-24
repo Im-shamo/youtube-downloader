@@ -1,4 +1,3 @@
-
 def main():
     N = 2000
     output = ["ans = int(input('Enter a number\\n>'))\n", "def why(ans):\n", "\tif ans == 0:\n", "\t\tprint('even')\n"]

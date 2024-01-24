@@ -81,26 +81,38 @@ class VidosDownload:
         if not self.streams:
             raise NoStreamsAvailable
 
-        [print(f"{i+1:^4}| Filesize: {stream.filesize_mb}MB {'':^4}| Title: {stream.title}")
-         for i, stream in enumerate(self.streams)]
+        # [print(f"{i+1:^4}| Filesize: {stream.filesize_mb}MB {'':^4}| Title: {stream.title}")
+        #  for i, stream in enumerate(self.streams)]
+        
+        total_size = 0
+        for i, stream in enumerate(self.streams):
+            size = stream.filesize_mb
+            total_size += size
+            print(f"{i+1:^4}| Filesize: {stream.filesize_mb:.2f} MB {'':^4}| Title: {stream.title}")
+        print(f"Total size is {total_size:.2f} MB")
+            
 
     def print_stream_qs(self):
         # make the output nicer
         for video, stream_q in zip(self.videos, self.stream_qs):
             print("\nTitle: ", video.title)
             [print(line) for line in stream_q]
+        self.filtered = True
 
     def filter_audio(self):
         self.stream_qs = [stream_q.filter(only_audio=True)
                           for stream_q in self.stream_qs]
+        self.filtered = True
 
     def filter_video(self):
         self.stream_qs = [stream_q.filter(only_video=True)
                           for stream_q in self.stream_qs]
+        self.filtered = True
 
     def filter_adaptive(self):
         self.stream_qs = [stream_q.filter(adaptive=True)
                           for stream_q in self.stream_qs]
+        self.filtered = True
 
     def filters_prompt(self):
         MODES = {
@@ -111,8 +123,6 @@ class VidosDownload:
         }
 
         MODES[mode_select(MODES)]()
-
-        self.filtered = True
 
     def do_nothing(self):
         return
