@@ -116,17 +116,13 @@ class VidosDownload:
 
     def filters_prompt(self):
         MODES = {
-            "None": self.do_nothing,
+            "None": self.no_filter,
             "Filter Audio": self.filter_audio,
             "Filter Video": self.filter_video,
             "Filter Adaptive": self.filter_adaptive
         }
 
-        answer = mode_select(MODES)
+        MODES[mode_select(MODES)]()
 
-        MODES[answer]()
-
-        self.filtered = False if answer == "None" else True
-
-    def do_nothing(self):
-        return
+    def no_filter(self):
+        self.filtered = False
