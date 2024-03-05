@@ -1,5 +1,5 @@
 from pytube import YouTube
-from videos_download import VidosDownload
+from videos_download import VideosDownload
 from user_input import *
 
 
@@ -32,7 +32,7 @@ def shamo_videos(videos=None):
 
     selected_videos = get_selection(videos)
 
-    download = VidosDownload(selected_videos, download_dir)
+    download = VideosDownload(selected_videos, download_dir)
     download.filters_prompt()
 
     if download.filtered:

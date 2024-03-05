@@ -3,7 +3,7 @@ from exceptions import *
 from user_input import *
 
 
-class VidosDownload:
+class VideosDownload:
     def __init__(self, videos: list[YouTube], download_dir: str) -> None:
 
         self.streams: list[Stream]
