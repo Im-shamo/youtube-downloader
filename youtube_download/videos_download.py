@@ -110,9 +110,11 @@ class VidosDownload:
             "Filter Adaptive": self.filter_adaptive
         }
 
-        MODES[mode_select(MODES)]()
+        answer = mode_select(MODES)
 
-        self.filtered = True
+        MODES[answer]()
+
+        self.filtered = False if answer == "None" else True
 
     def do_nothing(self):
         return
