@@ -13,7 +13,7 @@ def shamo_playlist():
         except Exception as e:
             print(e)
 
-    print(playlists)
+    # print(playlists)
     [print(f"{i+1} | Playlist title: {playlist.title:<40} | No. vidoes: {playlist.length}")
      for i, playlist in enumerate(playlists)]
 
