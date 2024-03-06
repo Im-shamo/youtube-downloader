@@ -141,7 +141,7 @@ class SelectionFromNumber:
 
         else:
             indexs = list(self.selected_index)
-            indexs.sort
+            indexs.sort()
             self.selection = [self.array[i] for i in indexs]
 
 
