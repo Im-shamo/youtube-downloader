@@ -1,6 +1,19 @@
-from user_input import get_selection
+from user_input import get_selection, SelectionFromNumber
+from time import time
 
-array = ["apple", "orange", "pear"]
-print(f"{array=}")
-sel = get_selection(array)
-print(f"{sel=}")
+fruits = ["apple", "banana", "orange", "grape", "watermelon", "strawberry", "pineapple", "mango", "kiwi", "pear", "cherry", "blueberry", "lemon", "lime", "peach", "plum", "raspberry", "blackberry", "pomegranate", "avocado"]
+print(f"{fruits=}")
+print(len(fruits))
+
+start = time()
+sel = get_selection(fruits)
+end = time()
+print(f"{sel=} time:{end-start}")
+
+start = time()
+sel = SelectionFromNumber(fruits)
+sel.prompt()
+sel.prompt_process()
+sel.make_selection()
+end = time()
+print(f"{sel.selection=} time:{end-start}")
