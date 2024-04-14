@@ -1,4 +1,4 @@
-from utility import *
+osfrom utility import *
 import os
 
 
@@ -202,11 +202,16 @@ def get_download_dir():
             os.path.join(os.path.expanduser("~"), "Videos")
         )
         # implemant path checking
-        print(f"saving to {download_dir}")
+        download_dir = os.path.abspath(download_dir)
+        if os.path.exists(download_dir):
 
-        if get_confirm("Confirm location", "y"):
+            print(f"saving to {download_dir}")
 
-            return download_dir
+            if get_confirm("Confirm location", "y"):
+
+                return download_dir
+        else:
+            print("Directory does not exist")
 
 
 def get_links():
