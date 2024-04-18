@@ -1,4 +1,0 @@
-print('''
-i am
-dumb
-''')
