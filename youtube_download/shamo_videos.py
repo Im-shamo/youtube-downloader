@@ -3,7 +3,7 @@ from videos_download import VideosDownload
 from user_input import *
 
 
-def shamo_videos(videos=None):
+def shamo_videos(videos=None, verbose=False):
 
     while not (videos):
         try:
