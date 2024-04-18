@@ -1,7 +1,7 @@
 from videos_download import VideosDownload
 from utility import *
 from pytube import YouTube, Playlist, exceptions
-from os import path
+from os import path, mkdir
 from typing import Optional
 
 
@@ -46,14 +46,17 @@ def playlist_cli(
         urls: list[str],
         output_path: str,
         verbose: bool,
+        create_dir: bool = False,
         high_res: bool = False,
         high_audio: bool = False,
         itag: Optional[int] = None
 ) -> None:
 
-    ouput_path = path.abspath(ouput_path)
-    if not path.exists(ouput_path):
+    output_path = path.abspath(output_path)
+    if not path.isdir(output_path):
         raise FileNotFoundError
+
+
 
     while True:
         try:
@@ -63,10 +66,20 @@ def playlist_cli(
         except Exception as e:
             print(e)
 
+
     if verbose:
         print_playlists_details(playlists=playlists)
 
+    if create_dir:
+        base_dir = output_path
+
     for playlist in playlists:
+        if create_dir:
+            title = playlist.title
+            output_path = path.join(base_dir, title)
+            mkdir(output_path)
+            print(f"Created directory: {output_path}")
+
         videos = playlist.videos
         if verbose:
             print_videos_details(videos=videos)
@@ -110,7 +123,8 @@ def print_videos_details(
 
 def print_playlists_details(
     urls: Optional[list[str]] = None,
-    playlists: Optional[list[Playlist]] = None
+    playlists: Optional[list[Playlist]] = None,
+    print_videos: bool = False,
 ) -> None:
 
     if urls:
@@ -122,3 +136,9 @@ def print_playlists_details(
 
     [print(f"{i+1} | Playlist title: {playlist.title:<40} | No. vidoes: {playlist.length}")
      for i, playlist in enumerate(playlists)]
+
+    if print_videos:
+        for playlist in playlists:
+            videos = playlist.videos
+            print_videos_details(videos=videos)
+            print("\n")
