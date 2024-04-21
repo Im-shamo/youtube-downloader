@@ -128,12 +128,7 @@ def print_playlists_details(
 ) -> None:
 
     if urls:
-        try:
-            playlists = [Playlist(url) for url in urls]
-
-        except Exception as e:
-            print(e)
-
+        videos = [YouTube(url) for url in urls]
     [print(f"{i+1} | Playlist title: {playlist.title:<40} | No. vidoes: {playlist.length}")
      for i, playlist in enumerate(playlists)]
 
