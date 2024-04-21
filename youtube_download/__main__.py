@@ -17,7 +17,7 @@ def get_args() -> vars:
 
     playlist_group = parser.add_argument_group("playlist options")
     playlist_group.add_argument("--playlist", type=str, nargs="+", help="playlist url(s)")
-    playlist_group.add_argument("--create-dir", action="store_true", help="create a directory with the name of the playlist title in output_path")
+    playlist_group.add_argument("--create-dir", action="store_true", help="create a directory with the name of the playlist title in output")
 
 
     download_options_group = parser.add_argument_group("Download option for videos and playlist")
@@ -56,7 +56,7 @@ def main():
         else:
             video_cli(
                 argvs.video,
-                argvs.output_path,
+                argvs.output,
                 argvs.verbose,
                 high_res=argvs.high_res,
                 high_audio=argvs.high_audio,
