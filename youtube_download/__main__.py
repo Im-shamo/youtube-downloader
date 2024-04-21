@@ -70,7 +70,7 @@ def main():
         else:
             playlist_cli(
                 argvs.playlist,
-                argvs.output_path,
+                argvs.output,
                 argvs.verbose,
                 high_res=argvs.high_res,
                 high_audio=argvs.high_audio,

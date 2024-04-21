@@ -1,6 +1,7 @@
 from pytube import YouTube, Stream
 from exceptions import *
 from user_input import *
+# import cli
 
 
 class VideosDownload:
@@ -39,26 +40,26 @@ class VideosDownload:
                     print(f"{i+1}: Failed to download {stream.title}. Error {e}")
                 self.failed_downloads.append(stream)
 
-    def get_streams_prompt(self):
+    # def get_streams_prompt(self):
 
-        if self.filtered:
-            streams_modes = {
-                "Download by itag": self.itag
-            }
+    #     if self.filtered:
+    #         streams_modes = {
+    #             "Download by itag": self.itag
+    #         }
 
-        else:
-            streams_modes = {
-                "Download highest resolution": self.highest_resolution,
-                "Download audio only": self.audio_only
-            }
+    #     else:
+    #         streams_modes = {
+    #             "Download highest resolution": self.highest_resolution,
+    #             "Download audio only": self.audio_only
+    #         }
 
-        answer = mode_select(streams_modes)
+    #     answer = mode_select(streams_modes)
 
-        if answer == "Download by itag":
-            streams_modes[answer](get_num("Enter itag"))
+    #     if answer == "Download by itag":
+    #         streams_modes[answer](get_num("Enter itag"))
 
-        else:
-            streams_modes[answer]()
+    #     else:
+    #         streams_modes[answer]()
 
     def get_download_prompt(self):
         if get_confirm("Continue to download", default="y"):
@@ -81,14 +82,13 @@ class VideosDownload:
         if not self.streams:
             raise NoStreamsAvailable
 
-        # [print(f"{i+1:^4}| Filesize: {stream.filesize_mb}MB {'':^4}| Title: {stream.title}")
-        #  for i, stream in enumerate(self.streams)]
-        
         total_size = 0
         for i, stream in enumerate(self.streams):
             size = stream.filesize_mb
             total_size += size
             print(f"{i+1:^4}| Filesize: {stream.filesize_mb:.2f} MB {'':^4}| Title: {stream.title}")
+
+
         print(f"Total size is {total_size:.2f} MB")
             
 
@@ -114,15 +114,17 @@ class VideosDownload:
                           for stream_q in self.stream_qs]
         self.filtered = True
 
-    def filters_prompt(self):
+    # def filters_prompt(self):
+    #     MODES = {
+    #         "None": self.no_filter,
+    #         "Filter Audio": self.filter_audio,
+    #         "Filter Video": self.filter_video,
+    #         "Filter Adaptive": self.filter_adaptive
+    #     }
+
+    #     MODES[mode_select(MODES)]()
+
+    def download_prompt(self) -> None:
         MODES = {
-            "None": self.no_filter,
-            "Filter Audio": self.filter_audio,
-            "Filter Video": self.filter_video,
-            "Filter Adaptive": self.filter_adaptive
+
         }
-
-        MODES[mode_select(MODES)]()
-
-    def no_filter(self):
-        self.filtered = False
