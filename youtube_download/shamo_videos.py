@@ -31,17 +31,46 @@ def shamo_videos(videos=None, verbose=False):
     print(output_text)
 
     selected_videos = get_selection(videos)
-
+    
     download = VideosDownload(selected_videos, download_dir)
-    download.filters_prompt()
+    
+    get_streams_mode(download)
 
-    if download.filtered:
-        download.print_stream_qs()
-
-    download.get_streams_prompt()
     download.print_streams_filesize()
-    download.get_download_prompt()
+    download.download(print_info=True)
+    
+def get_streams_mode(download: VideosDownload):
+    
+    GET_STREAMS_MODE = {
+        "Highest Resolution": download.highest_resolution,
+        "Best Audio": download.best_audio_only,
+        "Filter": get_filter_mode,
+    }
 
+    mode = mode_select(GET_STREAMS_MODE)   
+
+    if mode == "Filter":
+        GET_STREAMS_MODE["Filter"](download)
+    else:
+        GET_STREAMS_MODE[mode]()
+
+def get_filter_mode(download: VideosDownload):
+    
+    GET_FILTER_MODE = {
+        "Video only": download.filter_video_only,
+        "Audio only": download.filter_audio_only,
+        "Adaptive": download.filter_adaptive_only,
+    }
+
+    GET_FILTER_MODE[mode_select(GET_FILTER_MODE)]()
+    download.print_stream_info()
+    itag = get_num("Enter itag")
+    download.by_itag(itag)
+
+
+    
+    
+    
 
 if __name__ == "__main__":
     shamo_videos()
