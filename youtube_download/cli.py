@@ -87,7 +87,7 @@ def playlist_cli(
         if high_res:
             download.highest_resolution()
         elif high_audio:
-            download.audio_only()
+            download.best_audio_only()
         elif itag:
             download.itag(itag)
 
